@@ -1,70 +1,77 @@
-body{
-    margin:0;
-    font-family:Segoe UI,sans-serif;
-    background:#eef2ee;
-}
+<link rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 
-header{
-    background:#31452d;
-    color:white;
-    padding:20px;
-}
+<link rel="stylesheet"
+      href="style.css">
+</head>
 
-.container{
-    max-width:1200px;
-    margin:auto;
-    padding:20px;
-}
+<body>
 
-.card{
-    background:white;
-    padding:15px;
-    margin-bottom:15px;
-    border-radius:10px;
-    box-shadow:0 2px 5px rgba(0,0,0,.1);
-}
+<header>
+    <h1>🪖 Operasjon Henrik</h1>
+    <p>Hvor skal HV-soldat Henrik tjenestegjøre?</p>
+</header>
 
-.intro{
-    border-left:5px solid #3f5f3a;
-}
+<div class="container">
 
-.controls{
-    display:flex;
-    gap:10px;
-}
+    <div class="card intro">
+        <h2>Oppdrag</h2>
 
-input{
-    padding:10px;
-    min-width:250px;
-}
+        <p>Plasser Henrik der du tror han skal tjenestegjøre.</p>
 
-button{
-    padding:10px 15px;
-    border:none;
-    border-radius:5px;
-    background:#3f5f3a;
-    color:white;
-    cursor:pointer;
-}
+        <p>Alle tips er skjult frem til avsløring.</p>
+    </div>
 
-button:hover{
-    background:#50784a;
-}
+    <div class="card controls">
 
-#map {
-    height: 700px;
-    width: 100%;
-    border-radius: 10px;
-  margin-top: 20px;
-}
-.soldier-icon{
-    font-size:30px;
-}
+        <input id="name"
+               type="text"
+               placeholder="Ditt navn">
 
-.star-icon{
-    font-size:34px;
-}
+        <button id="guessBtn">
+            🪖 Plasser Henrik
+        </button>
 
-.winner{
-    background:#fff3a0;
+    </div>
+
+    <div id="map"></div>
+
+    <div class="card">
+        <div id="status">
+            Klar til innsending.
+        </div>
+    </div>
+
+    <div class="card admin">
+
+        <h2>⭐ Administrasjon</h2>
+
+        <button id="adminBtn">
+            Admin
+        </button>
+
+        <button id="answerBtn" style="display:none">
+            Sett fasit
+        </button>
+
+        <button id="revealBtn" style="display:none">
+            Avslør tips
+        </button>
+
+        <button id="winnerBtn" style="display:none">
+            Beregn vinner
+        </button>
+
+        <div id="results"></div>
+
+    </div>
+
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script type="module" src="app.js"></script>
+
+</body>
+</html>
 }
