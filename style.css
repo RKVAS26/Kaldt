@@ -1,82 +1,47 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+}
+
+header {
+    background: #31452d;
+    color: white;
+    padding: 20px;
+}
+
+.container {
+    max-width: 1200px;
+    margin: auto;
+    padding: 20px;
+}
+
+.card {
+    background: white;
+    padding: 15px;
+    margin-bottom: 15px;
+    border-radius: 10px;
+    border: 1px solid #ddd;
+}
+
+.controls {
+    display: flex;
+    gap: 10px;
+}
+
+button {
+    padding: 10px;
+}
+
 #map {
-    height: 700px !important;
-    width: 100% !important;
+    height: 700px;
+    width: 100%;
     border: 1px solid #999;
 }
-<link rel="stylesheet"
-      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 
-<link rel="stylesheet"
-      href="style.css">
-</head>
+.soldier-icon {
+    font-size: 32px;
+}
 
-<body>
-
-<header>
-    <h1>🪖 Operasjon Henrik</h1>
-    <p>Hvor skal HV-soldat Henrik tjenestegjøre?</p>
-</header>
-
-<div class="container">
-
-    <div class="card intro">
-        <h2>Oppdrag</h2>
-
-        <p>Plasser Henrik der du tror han skal tjenestegjøre.</p>
-
-        <p>Alle tips er skjult frem til avsløring.</p>
-    </div>
-
-    <div class="card controls">
-
-        <input id="name"
-               type="text"
-               placeholder="Ditt navn">
-
-        <button id="guessBtn">
-            🪖 Plasser Henrik
-        </button>
-
-    </div>
-
-    <div id="map"></div>
-
-    <div class="card">
-        <div id="status">
-            Klar til innsending.
-        </div>
-    </div>
-
-    <div class="card admin">
-
-        <h2>⭐ Administrasjon</h2>
-
-        <button id="adminBtn">
-            Admin
-        </button>
-
-        <button id="answerBtn" style="display:none">
-            Sett fasit
-        </button>
-
-        <button id="revealBtn" style="display:none">
-            Avslør tips
-        </button>
-
-        <button id="winnerBtn" style="display:none">
-            Beregn vinner
-        </button>
-
-        <div id="results"></div>
-
-    </div>
-
-</div>
-
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-
-<script type="module" src="app.js"></script>
-
-</body>
-</html>
+.star-icon {
+    font-size: 36px;
 }
