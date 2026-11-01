@@ -51,12 +51,11 @@ button:hover{
     background:#50784a;
 }
 
-#map{
-    height:700px;
-width: 100%;
-    border-radius:10px;
+#map {
+    height: 700px;
+    width: 100%;
+    border-radius: 10px;
 }
-
 .soldier-icon{
     font-size:30px;
 }
