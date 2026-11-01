@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Operasjon Henrik</title>
+
+<link rel="stylesheet"
+href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+
+<style>
+*{box-sizing:border-box;}
+
+body{
+margin:0;
+font-family:Segoe UI,Arial,sans-serif;
+background:#eef2ee;
+color:#222;
+}
+
+header{
+background:#31452d;
+color:white;
+padding:20px;
+}
+
+.container{
+max-width:1400px;
+margin:auto;
+padding:20px;
+}
+
+.card{
+background:white;
+border-radius:12px;
+padding:16px;
+margin-bottom:16px;
+box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.operation-box{
+background:#e5efe2;
+border-left:6px solid #3f5f3a;
+}
+
+.controls{
+display:flex;
+gap:10px;
+flex-wrap:wrap;
+}
+
+input{
+padding:10px;
+min-width:220px;
+border:1px solid #ccc;
+border-radius:6px;
+}
+
+button{
+padding:10px 15px;
+border:none;
+border-radius:6px;
+background:#3f5f3a;
+color:white;
+cursor:pointer;
+font-weight:600;
+}
+
+button:hover{
+background:#50784a;
+}
+
+#map{
+height:650px;
+border-radius:12px;
+overflow:hidden;
+}
+
+.status{
+font-weight:bold;
+color:#31452d;
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+}
+
+th,td{
+padding:10px;
+border-bottom:1px solid #ddd;
+}
+
+th{
+background:#f3f3f3;
+}
+
+.winner{
+background:#fff3a0;
+font-weight:bold;
+}
+
+.soldier-icon{
+font-size:32px;
+text-align:center;
+}
+
+.star-icon{
+font-size:36px;
+text-align:center;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+<h1>🪖 Operasjon Henrik</h1>
+<p>Hvor skal HV-soldat Henrik tjenestegjøre?</p>
+</header>
+
+<div class="container">
+
+<div class="card operation-box">
+<h2>Oppdrag</h2>
+
+<p>
+Heimevernet har sendt ut ordren, men ingen vet hvor Henrik
+skal tjenestegjøre.
+</p>
+
+<p>
+Sett ut soldaten på kartet der du tror Henrik havner.
+Når tjenestestedet blir kjent kåres vinneren automatisk.
+</p>
+</div>
+
+<div class="card">
+
+<div class="controls">
+
+<input id="name"
+placeholder="Navn">
+
+<button onclick="activateGuessMode()">
+🪖 Plasser Henrik
+</button>
+
+<button onclick="showGuesses()">
+📋 Vis deltakere
+</button>
+
+<button onclick="exportData()">
+💾 Eksporter tips
+</button>
+
+</div>
+
+</div>
+
+<div id="map"></div>
+
+<div class="card">
+<div id="status" class="status">
+Klikk «Plasser Henrik» for å legge inn et tips.
+</div>
+</div>
+
+<div class="card">
+
+<h3>Deltakere</h3>
+
+<div id="guessList"></div>
+
+</div>
+
+<div class="card">
+
+<h2>⭐ Avsløring av tjenestested</h2>
+
+<button onclick="activateAnswerMode()">
+⭐ Sett tjenestested
+</button>
+
+<button onclick="calculateWinner()">
+🏆 Beregn resultat
+</button>
+
+<p id="answerInfo"></p>
+
+<div id="results"></div>
+
+</div>
+
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+
+const oslo = [59.9139,10.7522];
+
+const map = L.map('map',{
+minZoom:8,
+maxZoom:12,
+maxBounds:[
+[59.25,9.45],
+[60.55,12.05]
+]
+}).setView(oslo,9);
+
+L.tileLayer(
+'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+{
+attribution:'© OpenStreetMap'
+}
+).addTo(map);
+
+const soldierIcon = L.divIcon({
+className:'soldier-icon',
+html:'🪖',
+iconSize:[32,32],
+iconAnchor:[16,16]
+});
+
+const starIcon = L.divIcon({
+className:'star-icon',
+html:'⭐',
+iconSize:[36,36],
+iconAnchor:[18,18]
+});
+
+let mode = null;
+let answerPoint = null;
+let answerMarker = null;
+let lines = [];
+
+let guesses =
+JSON.parse(
+localStorage.getItem("henrik_guesses")
+|| "[]"
+);
+
+function saveData(){
+localStorage.setItem(
+"henrik_guesses",
+JSON.stringify(guesses)
+);
+}
+
+function activateGuessMode(){
+
+mode="guess";
+
+document.getElementById("status").innerText=
+"Klikk på kartet der du tror Henrik skal tjenestegjøre.";
+}
+
+function activateAnswerMode(){
+
+mode="answer";
+
+document.getElementById("status").innerText=
+"Klikk på kartet for å sette fasit.";
+}
+
+function loadExistingMarkers(){
+
+guesses.forEach(g=>{
+
+L.marker(
+[g.lat,g.lng],
+{icon:soldierIcon}
+)
+.addTo(map)
+.bindPopup("🪖 "+g.name);
+
+});
+
+}
+
+loadExistingMarkers();
+
+map.on("click",function(e){
+
+if(mode==="guess"){
+
+const name=
+document
+.getElementById("name")
+.value
+.trim();
+
+if(!name){
+
+alert("Skriv inn navn først.");
+return;
+
+}
+
+const guess={
+name:name,
+lat:e.latlng.lat,
+lng:e.latlng.lng
+};
+
+guesses.push(guess);
+
+saveData();
+
+L.marker(
+[guess.lat,guess.lng],
+{icon:soldierIcon}
+)
+.addTo(map)
+.bindPopup("🪖 " + name);
+
+showGuesses();
+
+document.getElementById("status").innerText=
+"🪖 Henrik er plassert.";
+
+mode=null;
+}
+
+else if(mode==="answer"){
+
+answerPoint=e.latlng;
+
+if(answerMarker){
+
+map.removeLayer(answerMarker);
+
+}
+
+answerMarker=
+L.marker(
+answerPoint,
+{icon:starIcon}
+)
+.addTo(map)
+.bindPopup("⭐ Tjenestested");
+
+document.getElementById("answerInfo").innerHTML=
+"<strong>Fasit:</strong> " +
+answerPoint.lat.toFixed(4) +
+", " +
+answerPoint.lng.toFixed(4);
+
+mode=null;
+}
+
+});
+
+function showGuesses(){
+
+if(guesses.length===0){
+
+document.getElementById("guessList")
+.innerHTML="<p>Ingen registrerte tips.</p>";
+
+return;
+}
+
+let html="<ul>";
+
+guesses.forEach(g=>{
+
+html += "<li>🪖 " + g.name + "</li>";
+
+});
+
+html += "</ul>";
+
+document.getElementById("guessList")
+.innerHTML=html;
+}
+
+function distanceKm(
+lat1,lon1,
+lat2,lon2
+){
+
+const R=6371;
+
+const dLat=
+(lat2-lat1)*
+Math.PI/180;
+
+const dLon=
+(lon2-lon1)*
+Math.PI/180;
+
+const a=
+Math.sin(dLat/2)**2 +
+Math.cos(lat1*Math.PI/180)*
+Math.cos(lat2*Math.PI/180)*
+Math.sin(dLon/2)**2;
+
+const c=
+2*Math.atan2(
+Math.sqrt(a),
+Math.sqrt(1-a)
+);
+
+return R*c;
+}
+
+function clearLines(){
+
+lines.forEach(line=>{
+map.removeLayer(line);
+});
+
+lines=[];
+}
+
+function calculateWinner(){
+
+if(!answerPoint){
+
+alert("Sett tjenestested først.");
+
+return;
+}
+
+clearLines();
+
+let scores=[];
+
+guesses.forEach(g=>{
+
+const dist=
+distanceKm(
+g.lat,
+g.lng,
+answerPoint.lat,
+answerPoint.lng
+);
+
+scores.push({
+name:g.name,
+distance:dist,
+lat:g.lat,
+lng:g.lng
+});
+
+const line=
+L.polyline(
+[
+[g.lat,g.lng],
+[
+answerPoint.lat,
+answerPoint.lng
+]
+],
+{
+color:"red",
+dashArray:"8 8",
+weight:2,
+opacity:0.5
+}
+).addTo(map);
+
+lines.push(line);
+
+});
+
+scores.sort(
+(a,b)=>
+a.distance-b.distance
+);
+
+let html=
+"<table>" +
+"<tr>" +
+"<th>Plass</th>" +
+"<th>Navn</th>" +
+"<th>Avstand</th>" +
+"</tr>";
+
+scores.forEach(
+(s,index)=>{
+
+html+=
+`<tr class="${index===0?'winner':''}">
+<td>${index===0?'🏆':index+1}</td>
+<td>${s.name}</td>
+<td>${s.distance.toFixed(1)} km</td>
+</tr>`;
+
+});
+
+html+="</table>";
+
+document.getElementById("results")
+.innerHTML=html;
+
+if(scores.length>0){
+
+document.getElementByIdores[0].name +
+"</strong> (" +
+scores[0].distance.toFixed(1) +
+" km fra fasit)";
+}
+}
+
+function exportData(){
+
+const blob=
+new Blob(
+[
+JSON.stringify(
+guesses,
+null,
+2
+)
+],
+{
+type:"application/json"
+}
+);
+
+const a=
+document.createElement("a");
+
+a.href=
+URL.createObjectURL(blob);
+
+a.download=
+"operasjon_henrik.json";
+
+a.click();
+}
+
+showGuesses();
+
+</script>
+</body>
+</html>
