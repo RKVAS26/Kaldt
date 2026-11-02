@@ -28,12 +28,12 @@ L.tileLayer(
   }
 ).addTo(map);
 
-L.marker(
-  [e.latlng.lat, e.latlng.lng],
-  {
-    icon: soldierIcon
-  }
-)
+const soldierIcon = L.divIcon({
+  html: '<div style="font-size:30px;">🪖</div>',
+  className: '',
+  iconSize: [30, 30],
+  iconAnchor: [15, 15]
+});
 
 let activeName = null;
 
@@ -41,4 +41,122 @@ document
   .getElementById("guessBtn")
   .addEventListener("click", () => {
 
+    const name =
+      document
+        .getElementById("name")
+        .value
+        .trim();
+
+    if (!name) {
+      alert("Skriv inn navn først.");
+      return;
+    }
+
+    activeName = name;
+
+    alert(
+      "Klikk på kartet der du tror Henrik skal tjenestegjøre."
+    );
+  });
+
+map.on("click", async (e) => {
+
+  if (!activeName) {
+    return;
+  }
+
+  L.marker(
+    [e.latlng.lat, e.latlng.lng],
+    {
+   
+  )
+  .addTo(map)
+  .bindPopup(activeName);
+
+  try {
+const existing =
+  await getDocs(
+    collection(db, "guesses")
+  );
+
+let alreadyExists = false;
+
+existing.forEach(doc => {
+
+  const data = doc.data();
+
+  if (
+    data.name &&
+    data.name.toLowerCase() ===
+    activeName.toLowerCase()
+  ) {
+    alreadyExists = true;
+  }
+
+});
+
+if (alreadyExists) {
+
+  alert(
+    "Dette navnet har allerede levert et tips."
+  );
+
+  activeName = null;
+
+  return;
+}
+    await addDoc(
+      collection(db, "guesses"),
+      {
+        name: activeName,
+        lat: e.latlng.lat,
+        lng: e.latlng.lng,
+        created: Date.now()
+      }
+    );
+
+    alert(
+      activeName +
+      " sitt tips er lagret."
+    );
+
+  } catch (err) {
+
+    console.error(err);
+
+    alert(
+      "Feil ved lagring til Firestore."
+    );
+
+  }
+
+  activeName = null;
+
+});
+
+async function loadGuesses() {
+
+  const snapshot =
+    await getDocs(
+      collection(db, "guesses")
+    );
+
+  snapshot.forEach(doc => {
+
+    const g = doc.data();
+
+    L.marker(
+      [g.lat, g.lng],
+      {
+        icon: soldierIcon
+      }
+    )
+    .addTo(map)
+    .bindPopup(g.name);
+
+  });
+
+}
+
+loadGuesses();
    
