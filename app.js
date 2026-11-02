@@ -3,7 +3,8 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/fireba
 import {
   getFirestore,
   collection,
-  addDoc
+  addDoc,
+  getDocs
 } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -27,64 +28,17 @@ L.tileLayer(
   }
 ).addTo(map);
 
+const soldierIcon = L.divIcon({
+  html: '<div style="font-size:30px;">🪖</div>',
+  className: '',
+  iconSize: [30, 30],
+  iconAnchor: [15, 15]
+});
+
 let activeName = null;
 
 document
   .getElementById("guessBtn")
   .addEventListener("click", () => {
 
-    const name =
-      document.getElementById("name")
-      .value
-      .trim();
-
-    if (!name) {
-      alert("Skriv inn navn først");
-      return;
-    }
-
-    activeName = name;
-
-    alert("Klikk på kartet for å plassere Henrik.");
-  });
-
-map.on("click", async (e) => {
-
-  if (!activeName) {
-    return;
-  }
-
-  L.marker(
-    [e.latlng.lat, e.latlng.lng]
-  ).addTo(map);
-
-  try {
-
-    await addDoc(
-      collection(db, "guesses"),
-      {
-        name: activeName,
-        lat: e.latlng.lat,
-        lng: e.latlng.lng,
-        created: Date.now()
-      }
-    );
-
-    alert(
-      activeName +
-      " sitt tips er lagret."
-    );
-
-  } catch (err) {
-
-    console.error(err);
-
-    alert(
-      "Feil ved lagring til Firestore."
-    );
-
-  }
-
-  activeName = null;
-
-});
+   
