@@ -14,7 +14,7 @@ const soldierIcon = L.divIcon({
   iconAnchor: [15,15]
 });
 
-map.on("click", function(e){
+map.on('click', function(e){
 
   L.marker(
     [e.latlng.lat, e.latlng.lng],
@@ -24,5 +24,3 @@ map.on("click", function(e){
   ).addTo(map);
 
 });
-
-   
