@@ -7,20 +7,10 @@ L.tileLayer(
   }
 ).addTo(map);
 
-const soldierIcon = L.divIcon({
-    className: 'soldier-icon',
-    html: '🪖',
-    iconSize: [32,32],
-    iconAnchor: [16,16]
-});
-
 map.on("click", function(e){
 
     L.marker(
-        [e.latlng.lat, e.latlng.lng],
-        {
-            icon: soldierIcon
-        }
+        [e.latlng.lat, e.latlng.lng]
     ).addTo(map);
 
 });
