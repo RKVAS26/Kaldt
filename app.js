@@ -46,12 +46,30 @@ async function loadGuesses() {
       collection(db, "guesses")
     );
 
-  snapshot.forEach(doc => {
+snapshot.forEach(doc => {
 
-    const g = doc.data();
+  const g = doc.data();
 
-    L.marker(
-      [g.lat, g.lng],
+  console.log(g);
+
+  if (
+    g.lat === undefined ||
+    g.lng === undefined
+  ) {
+    console.log("Ugyldig dokument:", g);
+    return;
+  }
+
+  L.marker(
+    [g.lat, g.lng],
+    {
+      icon: soldierIcon
+    }
+  )
+  .addTo(map)
+  .bindPopup(g.name);
+
+});
       {
         icon: soldierIcon
       }
