@@ -28,12 +28,12 @@ L.tileLayer(
   }
 ).addTo(map);
 
-const soldierIcon = L.divIcon({
-  html: '<div style="font-size:30px;">🪖</div>',
-  className: '',
-  iconSize: [30, 30],
-  iconAnchor: [15, 15]
-});
+L.marker(
+  [e.latlng.lat, e.latlng.lng],
+  {
+    icon: soldierIcon
+  }
+)
 
 let activeName = null;
 
