@@ -31,13 +31,11 @@ L.tileLayer(
 const soldierIcon = L.divIcon({
   html: '<div style="font-size:30px;">🪖</div>',
   className: '',
-  iconSize: [30,30],
-  iconAnchor: [15,15]
+  iconSize: [30, 30],
+  iconAnchor: [15, 15]
 });
 
 let activeName = null;
-
-/* LAST INN ALLE EKSISTERENDE TIPS */
 
 async function loadGuesses() {
 
@@ -46,30 +44,19 @@ async function loadGuesses() {
       collection(db, "guesses")
     );
 
-snapshot.forEach(doc => {
+  snapshot.forEach(doc => {
 
-  const g = doc.data();
+    const g = doc.data();
 
-  console.log(g);
-
-  if (
-    g.lat === undefined ||
-    g.lng === undefined
-  ) {
-    console.log("Ugyldig dokument:", g);
-    return;
-  }
-
-  L.marker(
-    [g.lat, g.lng],
-    {
-      icon: soldierIcon
+    if (
+      g.lat === undefined ||
+      g.lng === undefined
+    ) {
+      return;
     }
-  )
-  .addTo(map)
-  .bindPopup(g.name);
 
-});
+    L.marker(
+      [g.lat, g.lng],
       {
         icon: soldierIcon
       }
@@ -83,8 +70,6 @@ snapshot.forEach(doc => {
 
 loadGuesses();
 
-/* NYTT TIPS */
-
 document
   .getElementById("guessBtn")
   .addEventListener("click", () => {
@@ -97,9 +82,7 @@ document
 
     if (!name) {
 
-      alert(
-        "Skriv inn navn først."
-      );
+      alert("Skriv inn navn først.");
 
       return;
     }
