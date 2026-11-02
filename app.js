@@ -1,4 +1,3 @@
-alert("app.js startet");
 const map = L.map('map').setView([59.9139, 10.7522], 9);
 
 L.tileLayer(
@@ -8,13 +7,20 @@ L.tileLayer(
   }
 ).addTo(map);
 
+const soldierIcon = L.divIcon({
+    className: 'soldier-icon',
+    html: '🪖',
+    iconSize: [32,32],
+    iconAnchor: [16,16]
+});
+
 map.on("click", function(e){
 
-  alert(
-    "Klikk registrert: " +
-    e.latlng.lat.toFixed(4) +
-    ", " +
-    e.latlng.lng.toFixed(4)
-  );
+    L.marker(
+        [e.latlng.lat, e.latlng.lng],
+        {
+            icon: soldierIcon
+        }
+    ).addTo(map);
 
 });
