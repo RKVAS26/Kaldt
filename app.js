@@ -9,6 +9,15 @@ import {
   setDoc
 } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js";
 
+import {
+  getFirestore,
+  collection,
+  addDoc,
+  getDocs,
+  doc,
+  setDoc
+} from "https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js";
+
 const firebaseConfig = {
   apiKey: "AIzaSyCJsLipDhY7A0EeGbLI8QjppDIGZqOOb3k",
   authDomain: "hv-henrik.firebaseapp.com",
@@ -25,6 +34,10 @@ const map = L.map('map').setView([59.9139, 10.7522], 9);
 
 L.tileLayer(
   'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+  {
+    attribution: '&copy; OpenStreetMap'
+  }
+).addTo(map);
   {
     attribution: '&copy; OpenStreetMap'
   }
