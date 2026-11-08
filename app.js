@@ -228,6 +228,8 @@ document
   .getElementById("winnerBtn")
   .addEventListener("click", async () => {
 
+    alert("Winner-knapp trykket");
+    
     try {
 
       const answerDoc =
