@@ -130,7 +130,7 @@ map.on("click", async (e) => {
 
     alert("Fasit lagret.");
 
-    answerMode = false;
+
 
     return;
   }
