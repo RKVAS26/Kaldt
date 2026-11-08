@@ -224,3 +224,86 @@ map.on("click", async (e) => {
   activeName = null;
 
 });
+document
+  .getElementById("winnerBtn")
+  .addEventListener("click", async () => {
+
+    try {
+
+      const answerDoc =
+        await getDoc(
+          doc(db, "settings", "answer")
+        );
+
+      if (!answerDoc.exists()) {
+
+        alert("Ingen fasit funnet.");
+
+        return;
+      }
+
+      const answer =
+        answerDoc.data();
+
+      const guesses =
+        await getDocs(
+          collection(db, "guesses")
+        );
+
+      let results = [];
+
+      guesses.forEach(entry => {
+
+        const g = entry.data();
+
+        const distanceKm =
+          map.distance(
+            [g.lat, g.lng],
+            [answer.lat, answer.lng]
+          ) / 1000;
+
+        results.push({
+          name: g.name,
+          distance: distanceKm
+        });
+
+      });
+
+      results.sort(
+        (a, b) =>
+          a.distance - b.distance
+      );
+
+      let html =
+        "<h3>🏆 Resultatliste</h3>";
+
+      html += "<ol>";
+
+      results.forEach(r => {
+
+        html +=
+          "<li>" +
+          r.name +
+          " – " +
+          r.distance.toFixed(1) +
+          " km</li>";
+
+      });
+
+      html += "</ol>";
+
+      document
+        .getElementById("results")
+        .innerHTML = html;
+
+    } catch (err) {
+
+      console.error(err);
+
+      alert(
+        "Kunne ikke beregne resultat."
+      );
+
+    }
+
+  });
