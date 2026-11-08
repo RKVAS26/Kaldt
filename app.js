@@ -6,9 +6,8 @@ import {
   addDoc,
   getDocs,
   doc,
-  setDoc,
-  getDoc
-}
+  setDoc
+} from "https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCJsLipDhY7A0EeGbLI8QjppDIGZqOOb3k",
@@ -36,6 +35,13 @@ const soldierIcon = L.divIcon({
   className: '',
   iconSize: [30, 30],
   iconAnchor: [15, 15]
+});
+
+const answerIcon = L.divIcon({
+  html: '<div style="font-size:32px;">⭐</div>',
+  className: '',
+  iconSize: [32, 32],
+  iconAnchor: [16, 16]
 });
 
 let activeName = null;
@@ -99,29 +105,81 @@ document
 
   });
 
-map.on("click", async (e) => {
-  if (answerMode) {
+document
+  .getElementById("adminBtn")
+  .addEventListener("click", () => {
 
-    await setDoc(
-      doc(db, "settings", "answer"),
-      {
-        lat: e.latlng.lat,
-        lng: e.latlng.lng
-      }
+    const pass = prompt("Admin-passord");
+
+    if (pass !== "Henrik2026") {
+
+      alert("Feil passord");
+
+      return;
+    }
+
+    document.getElementById("answerBtn").style.display =
+      "inline-block";
+
+    document.getElementById("winnerBtn").style.display =
+      "inline-block";
+
+    alert("Adminmodus aktivert");
+
+  });
+
+document
+  .getElementById("answerBtn")
+  .addEventListener("click", () => {
+
+    answerMode = true;
+
+    alert(
+      "Klikk på kartet der Henrik faktisk tjenestegjorde."
     );
 
-    L.marker(
-      [e.latlng.lat, e.latlng.lng]
-    )
-    .addTo(map)
-    .bindPopup("⭐ Fasit");
+  });
 
-    alert("Fasit lagret.");
+map.on("click", async (e) => {
+
+  if (answerMode) {
+
+    try {
+
+      await setDoc(
+        doc(db, "settings", "answer"),
+        {
+          lat: e.latlng.lat,
+          lng: e.latlng.lng
+        }
+      );
+
+      L.marker(
+        [e.latlng.lat, e.latlng.lng],
+        {
+          icon: answerIcon
+        }
+      )
+      .addTo(map)
+      .bindPopup("⭐ Fasit");
+
+      alert("Fasit lagret.");
+
+    } catch (err) {
+
+      console.error(err);
+
+      alert(
+        "Kunne ikke lagre fasit."
+      );
+
+    }
 
     answerMode = false;
 
     return;
   }
+
   if (!activeName) {
     return;
   }
@@ -165,60 +223,3 @@ map.on("click", async (e) => {
   activeName = null;
 
 });
-document
-  .getElementById("adminBtn")
-  .addEventListener("click", () => {
-
-    const pass = prompt("Admin-passord");
-
-    if (pass !== "Henrik2026") {
-
-      alert("Feil passord");
-
-      return;
-    }
-
-    document.getElementById("answerBtn").style.display =
-      "inline-block";
-
-    document.getElementById("winnerBtn").style.display =
-      "inline-block";
-
-    alert("Adminmodus aktivert");
-
-  });
-
-document
-  .getElementById("adminBtn")
-  .addEventListener("click", () => {
-
-    const pass = prompt("Admin-passord");
-
-    if (pass !== "Henrik2026") {
-
-      alert("Feil passord");
-
-      return;
-    }
-
-    document.getElementById("answerBtn").style.display =
-      "inline-block";
-
-    document.getElementById("winnerBtn").style.display =
-      "inline-block";
-
-    alert("Adminmodus aktivert");
-
-  });
-
-document
-  .getElementById("answerBtn")
-  .addEventListener("click", () => {
-
-    answerMode = true;
-
-    alert(
-      "Klikk på kartet der Henrik faktisk tjenestegjorde."
-    );
-
-  });
