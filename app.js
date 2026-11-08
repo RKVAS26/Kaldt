@@ -140,3 +140,39 @@ map.on("click", async (e) => {
   activeName = null;
 
 });
+let answerMode = false;
+
+document
+  .getElementById("adminBtn")
+  .addEventListener("click", () => {
+
+    const pass = prompt("Admin-passord");
+
+    if (pass !== "Henrik2026") {
+
+      alert("Feil passord");
+
+      return;
+    }
+
+    document.getElementById("answerBtn").style.display =
+      "inline-block";
+
+    document.getElementById("winnerBtn").style.display =
+      "inline-block";
+
+    alert("Adminmodus aktivert");
+
+  });
+
+document
+  .getElementById("answerBtn")
+  .addEventListener("click", () => {
+
+    answerMode = true;
+
+    alert(
+      "Klikk på kartet der Henrik faktisk tjenestegjorde."
+    );
+
+  });
