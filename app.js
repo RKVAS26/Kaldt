@@ -213,14 +213,3 @@ document
     );
 
   });
-document
-  .getElementById("answerBtn")
-  .addEventListener("click", () => {
-
-    answerMode = true;
-
-    alert(
-      "Klikk på kartet der Henrik faktisk tjenestegjorde."
-    );
-
-  });
