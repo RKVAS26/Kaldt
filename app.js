@@ -100,7 +100,28 @@ document
   });
 
 map.on("click", async (e) => {
+  if (answerMode) {
 
+    await setDoc(
+      doc(db, "settings", "answer"),
+      {
+        lat: e.latlng.lat,
+        lng: e.latlng.lng
+      }
+    );
+
+    L.marker(
+      [e.latlng.lat, e.latlng.lng]
+    )
+    .addTo(map)
+    .bindPopup("⭐ Fasit");
+
+    alert("Fasit lagret.");
+
+    answerMode = false;
+
+    return;
+  }
   if (!activeName) {
     return;
   }
