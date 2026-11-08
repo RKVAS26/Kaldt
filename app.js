@@ -177,7 +177,7 @@ map.on("click", async (e) => {
   activeName = null;
 
 });
-let answerMode = false;
+
 
 document
   .getElementById("adminBtn")
