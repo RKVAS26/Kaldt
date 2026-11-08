@@ -4,7 +4,9 @@ import {
   getFirestore,
   collection,
   addDoc,
-  getDocs
+  getDocs,
+  doc,
+  setDoc
 } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -36,6 +38,7 @@ const soldierIcon = L.divIcon({
 });
 
 let activeName = null;
+let answerMode = false;
 
 async function loadGuesses() {
 
@@ -96,7 +99,28 @@ document
   });
 
 map.on("click", async (e) => {
+  if (answerMode) {
 
+    await setDoc(
+      doc(db, "settings", "answer"),
+      {
+        lat: e.latlng.lat,
+        lng: e.latlng.lng
+      }
+    );
+
+    L.marker(
+      [e.latlng.lat, e.latlng.lng]
+    )
+    .addTo(map)
+    .bindPopup("⭐ Fasit");
+
+    alert("Fasit lagret.");
+
+    answerMode = false;
+
+    return;
+  }
   if (!activeName) {
     return;
   }
@@ -165,6 +189,17 @@ document
 
   });
 
+document
+  .getElementById("answerBtn")
+  .addEventListener("click", () => {
+
+    answerMode = true;
+
+    alert(
+      "Klikk på kartet der Henrik faktisk tjenestegjorde."
+    );
+
+  });
 document
   .getElementById("answerBtn")
   .addEventListener("click", () => {
